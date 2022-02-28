@@ -1,8 +1,29 @@
 import { Col, Row, Input, Typography, Radio, Select, Tag } from 'antd';
-
+import { useState } from 'react'
+import { useDispatch } from 'react-redux';
+// import { searchFilterChange, statusFilterChange, priorityFilterChange } from '../../redux/actions';
+import filterSlice from './filterSlice';
 const { Search } = Input;
 
 export default function Filters() {
+  const [searchText, setSearchText] = useState('')
+  const [statusRadio, setStatusRadio] = useState('All')
+  const [priority, setPriority] = useState([])
+  const dispatch = useDispatch();
+
+  const handleStatusRadioChange = (e) => {
+    setStatusRadio(e.target.value); //filters/statusFilterChange
+    dispatch(filterSlice.actions.statusFilterChange(e.target.value))
+  }
+  const handleSearchTextChange = (e) => {
+    setSearchText(e.target.value);
+    dispatch(filterSlice.actions.searchFilterChange(e.target.value))
+  }
+
+  const handlePriorityChange = (value) => {
+    setPriority(value)
+    dispatch(filterSlice.actions.priorityFilterChange(value))
+  }
   return (
     <Row justify='center'>
       <Col span={24}>
@@ -11,7 +32,7 @@ export default function Filters() {
         >
           Search
         </Typography.Paragraph>
-        <Search placeholder='input search text' />
+        <Search value={searchText} onChange={handleSearchTextChange} placeholder='input search text' />
       </Col>
       <Col sm={24}>
         <Typography.Paragraph
@@ -19,7 +40,7 @@ export default function Filters() {
         >
           Filter By Status
         </Typography.Paragraph>
-        <Radio.Group>
+        <Radio.Group value={statusRadio} onChange={handleStatusRadioChange}>
           <Radio value='All'>All</Radio>
           <Radio value='Completed'>Completed</Radio>
           <Radio value='Todo'>To do</Radio>
@@ -32,6 +53,8 @@ export default function Filters() {
           Filter By Priority
         </Typography.Paragraph>
         <Select
+          value={priority}
+          onChange={handlePriorityChange}
           mode='multiple'
           allowClear
           placeholder='Please select'
